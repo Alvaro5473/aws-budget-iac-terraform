@@ -16,14 +16,31 @@ resource "aws_budgets_budget" "ec2" {
 
   notification {
     comparison_operator        = "GREATER_THAN"
-    threshold                  = 20
+    threshold                  = 5
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
-    subscriber_email_addresses = ["alvarorivasalvarez@gmail.com"]
+    subscriber_email_addresses = [var.notification_email]
   }
 
   tags = {
-    Tag1 = "Value1"
-    Tag2 = "Value2"
+    nombre = "Álvaro"
+    iac =    "terraform"
+    env =    "Automatización y despliegue"
   }
+
+  terraform {
+    backend "s3" {
+      encrypt = true
+      bucket = "terraform-infrastructure-654654536453"
+      dynamodb_table = "terraform-state-lock"
+      key = "terraform.tfstate"
+      region = "eu-north-1"
+    }
+  }
+}
+
+module "iam" {
+  source = "./iam"
+  user1_name = var.user1_name
+  user2_name = var.user2_name
 }
